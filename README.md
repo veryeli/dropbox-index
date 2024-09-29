@@ -11,6 +11,6 @@ get access token from app settings
 Go to permissions and allow read access
 
 copy `dropbox_config.example.py` to `dropbox_config.py`
-enter the app token and get the other tokens as described in dropbox_config.py
+enter the app token and get the other tokens with `python config.py`
 
 `python scrape.py`

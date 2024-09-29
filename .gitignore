@@ -1,4 +1,7 @@
+
 # app specific
+analysis.py
+*.pkl
 *.xlsx
 dropbox_config.py
 *.ipynb
