@@ -1,4 +1,4 @@
-
+.DS_Store
 # app specific
 analysis.py
 *.pkl
