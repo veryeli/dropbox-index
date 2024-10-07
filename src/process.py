@@ -1,7 +1,14 @@
+import hashlib
+import math
+import os
+
 import pickle
 import dropbox
 import pandas as pd
 from dropbox_config import FULL_FILE_INDEX
+from dropbox_content_hasher import DropboxContentHasher
+
+DROPBOX_HASH_CHUNK_SIZE = 4*1024*1024
 
 def get_filetype_from_fname(fname):
     extension = fname.split('.')[-1].lower()
@@ -67,3 +74,23 @@ def get_folder_at_depth(path, depth):
 def get_folder_at_depths(path, start_depth, end_depth):
     path_chunks = path.split('/')[start_depth:end_depth + 1]
     return '/'.join(path_chunks)
+
+
+def compute_dropbox_hash(fn):
+    """Uses sample code from Dropbox to compute the hash of a file."""
+    hasher = DropboxContentHasher()
+    with open(fn, 'rb') as f:
+        while True:
+            chunk = f.read(1024)  # or whatever chunk size you want
+            if len(chunk) == 0:
+                break
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+def compute_sha_hash(fn):
+    """Computes a more traditional sha hash"""
+    sha_hash = hashlib.sha256()
+    with open(fn, 'rb') as f:
+        for block in iter(lambda: f.read(4096), b""):
+            sha_hash.update(block)
+    return sha_hash.hexdigest()

@@ -21,7 +21,7 @@ def get_dropbox_user_client(namespace=NAMESPACE_ID):
 def get_dropbox_at_base_path(namespace=NAMESPACE_ID):
     dbx_team = get_dropbox_team_client()
     dbx = dbx_team.as_admin(ACCOUNT_ID)
-    path_root = dropbox.common.PathRoot.namespace_id(NAMESPACE_ID)
+    path_root = dropbox.common.PathRoot.namespace_id(namespace)
     dbx =  dbx.with_path_root(path_root)
     return dbx
 
@@ -35,7 +35,7 @@ def print_members():
     dbx = get_dropbox_team_client()
     members = dbx.team_members_list()
     for member in members.members:
-        print(member)
+        print(member.profile.email, member.profile.account_id)
 
 
 # Function to get or create a shared link for a file
@@ -58,8 +58,11 @@ def get_or_create_shared_link(dbx, path):
 
 # Function to list files and folders only in the base root of the team space
 def list_files_and_folders(dbx, path='', recursive=True, create_links=True):
+    if path == '/':
+        path = ''
     items = []
     try:
+        print(f"Listing files and folders in path: {path}")
         # Get the list of files and folders in the current path (base root)
         result = dbx.files_list_folder(path, recursive=recursive, include_media_info=True)
 
@@ -80,7 +83,6 @@ def list_files_and_folders(dbx, path='', recursive=True, create_links=True):
         return list_files_and_folders(dbx, path)
     except dropbox.exceptions.ApiError as e:
         print(f"API error while accessing path {path}: {e}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
+
 
     return items
